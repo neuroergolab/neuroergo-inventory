@@ -1073,7 +1073,7 @@ window.confirmStockAdjust = async function() {
   showToast(`✓ ${d.name} updated to ${newQty} ${d.unit||'units'}`);
 }
 
-// --- Export CSV ---
+// --- Delete ---
 window.deleteDevice = async function(id, name) {
   if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
   const { deleteDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
@@ -1087,6 +1087,9 @@ window.deleteDisposable = async function(id, name) {
   await deleteDoc(doc(db, 'disposables', id));
   showToast(`✓ ${name} deleted`);
 }
+
+// --- Export CSV ---
+window.exportCSV = function() {
   const headers = ['Item','Borrower','Role','Project','Qty','Destination','Duration','Checked Out','Expected Return','Returned','Return Notes'];
   const rows = window._loans.map(l => {
     const outDate = l.checkedOutAt?.toDate ? l.checkedOutAt.toDate().toLocaleString() : '';

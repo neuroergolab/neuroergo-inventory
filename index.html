@@ -229,46 +229,57 @@
 
   /* Card-style rows for mobile tables */
   @media (max-width: 700px) {
+    html, body { overflow-x: hidden; width: 100%; }
     .sidebar { display: none; }
     .mobile-nav { display: block; }
-    .main { margin-left: 0; padding: 16px 12px 80px; }
-    .form-grid { grid-template-columns: 1fr; }
+    .app { width: 100%; }
+    .main { margin-left: 0; padding: 14px 10px 80px; width: 100%; min-width: 0; }
 
-    .page-title { font-size: 17px; }
-    .topbar { margin-bottom: 14px; }
-    .topbar-actions .btn span { display: none; }
+    .form-grid { grid-template-columns: 1fr; }
+    .page-title { font-size: 16px; }
+    .topbar { margin-bottom: 12px; gap: 8px; }
+    .topbar-actions { flex-shrink: 0; }
 
     /* Stack toolbar vertically */
     .toolbar { gap: 6px; }
-    .search-wrap { min-width: 100%; }
+    .search-wrap { min-width: 0; width: 100%; }
+    .toolbar select { font-size: 12px; padding: 6px 8px; }
 
     /* Hide table, show cards instead */
     .table-wrap table { display: none; }
-    .table-wrap { background: none; border: none; border-radius: 0; }
+    .table-wrap { background: none; border: none; border-radius: 0; overflow: visible; }
     .card-list { display: flex; flex-direction: column; gap: 8px; }
     .item-card {
       background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius-lg); padding: 12px 14px;
+      border-radius: var(--radius-lg); padding: 11px 12px;
+      min-width: 0; overflow: hidden;
     }
     .item-card-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 6px; }
-    .item-card-name { font-weight: 500; font-size: 13px; }
+    .item-card-name { font-weight: 500; font-size: 13px; word-break: break-word; }
     .item-card-sub { font-size: 11px; color: var(--text-faint); margin-top: 2px; }
-    .item-card-meta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
+    .item-card-meta { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
     .item-card-actions { display: flex; gap: 6px; margin-top: 8px; }
-    .item-card-actions .btn { flex: 1; justify-content: center; }
+    .item-card-actions .btn { flex: 1; justify-content: center; font-size: 12px; padding: 6px 8px; }
 
-    /* Stats smaller */
-    .stats-row { grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+    /* Stats 2-col */
+    .stats-row { grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
     .stat-card { padding: 10px 12px; }
-    .stat-val { font-size: 22px; }
+    .stat-label { font-size: 10px; }
+    .stat-val { font-size: 20px; }
 
-    /* Modal full-screen on mobile */
+    /* Modal slides up from bottom */
     .modal-overlay { align-items: flex-end; padding: 0; }
     .modal { width: 100%; border-radius: var(--radius-lg) var(--radius-lg) 0 0; max-height: 92vh; }
+    .modal-header { padding: 16px 18px 12px; }
+    .modal-body { padding: 16px 18px; }
+    .modal-footer { padding: 12px 18px; }
 
-    /* Toast full width */
-    .toast-wrap { left: 12px; right: 12px; bottom: 72px; }
+    /* Toast above bottom nav */
+    .toast-wrap { left: 10px; right: 10px; bottom: 68px; }
     .toast { text-align: center; }
+
+    /* Prevent badge overflow */
+    .badge { font-size: 10px; padding: 2px 6px; white-space: nowrap; }
   }
 </style>
 </head>

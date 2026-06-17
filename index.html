@@ -211,10 +211,64 @@
 
   .info-box { background: var(--accent-bg); border: 1px solid #bfdbfe; border-radius: var(--radius); padding: 10px 14px; font-size: 12px; color: #1e40af; margin-bottom: 14px; }
 
+  /* Mobile bottom nav */
+  .mobile-nav {
+    display: none; position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--surface); border-top: 1px solid var(--border);
+    z-index: 50; padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+  }
+  .mobile-nav-inner { display: flex; justify-content: space-around; }
+  .mobile-nav-btn {
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    padding: 4px 16px; border: none; background: none; cursor: pointer;
+    color: var(--text-faint); font-size: 10px; font-weight: 500;
+    font-family: inherit; transition: color 0.1s;
+  }
+  .mobile-nav-btn svg { width: 22px; height: 22px; }
+  .mobile-nav-btn.active { color: var(--accent); }
+
+  /* Card-style rows for mobile tables */
   @media (max-width: 700px) {
     .sidebar { display: none; }
-    .main { margin-left: 0; padding: 16px; }
+    .mobile-nav { display: block; }
+    .main { margin-left: 0; padding: 16px 12px 80px; }
     .form-grid { grid-template-columns: 1fr; }
+
+    .page-title { font-size: 17px; }
+    .topbar { margin-bottom: 14px; }
+    .topbar-actions .btn span { display: none; }
+
+    /* Stack toolbar vertically */
+    .toolbar { gap: 6px; }
+    .search-wrap { min-width: 100%; }
+
+    /* Hide table, show cards instead */
+    .table-wrap table { display: none; }
+    .table-wrap { background: none; border: none; border-radius: 0; }
+    .card-list { display: flex; flex-direction: column; gap: 8px; }
+    .item-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 12px 14px;
+    }
+    .item-card-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 6px; }
+    .item-card-name { font-weight: 500; font-size: 13px; }
+    .item-card-sub { font-size: 11px; color: var(--text-faint); margin-top: 2px; }
+    .item-card-meta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
+    .item-card-actions { display: flex; gap: 6px; margin-top: 8px; }
+    .item-card-actions .btn { flex: 1; justify-content: center; }
+
+    /* Stats smaller */
+    .stats-row { grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+    .stat-card { padding: 10px 12px; }
+    .stat-val { font-size: 22px; }
+
+    /* Modal full-screen on mobile */
+    .modal-overlay { align-items: flex-end; padding: 0; }
+    .modal { width: 100%; border-radius: var(--radius-lg) var(--radius-lg) 0 0; max-height: 92vh; }
+
+    /* Toast full width */
+    .toast-wrap { left: 12px; right: 12px; bottom: 72px; }
+    .toast { text-align: center; }
   }
 </style>
 </head>
@@ -255,6 +309,28 @@
     </div>
     <div class="sidebar-footer">
       <div class="conn-status"><span class="status-dot" id="conn-dot"></span><span id="conn-text">Connecting...</span></div>
+    </div>
+  </nav>
+
+  <!-- Mobile bottom nav -->
+  <nav class="mobile-nav">
+    <div class="mobile-nav-inner">
+      <button class="mobile-nav-btn active" id="mnav-devices" onclick="showPage('devices')">
+        <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        Devices
+      </button>
+      <button class="mobile-nav-btn" id="mnav-disposables" onclick="showPage('disposables')">
+        <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>
+        Supplies
+      </button>
+      <button class="mobile-nav-btn" id="mnav-log" onclick="showPage('log')">
+        <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2"/></svg>
+        Log
+      </button>
+      <button class="mobile-nav-btn" id="mnav-checkout" onclick="openModal('checkout-modal')">
+        <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        Check out
+      </button>
     </div>
   </nav>
 
@@ -505,11 +581,11 @@
         </div>
         <div class="form-group">
           <label>Lab POC</label>
-          <input type="text" id="ad-poc" placeholder="e.g. Rob Spenceley">
+          <input type="text" id="ad-poc" placeholder="e.g. Ronak Mohanty">
         </div>
         <div class="form-group">
           <label>Projects</label>
-          <input type="text" id="ad-projects" placeholder="e.g. pHRI, LEARNER">
+          <input type="text" id="ad-projects" placeholder="e.g. CHIRP, LEARNER">
         </div>
         <div class="form-group full">
           <label>Notes</label>
@@ -802,7 +878,15 @@ window.renderDevices = function() {
     return true;
   });
   const body = document.getElementById('device-body');
-  if (!items.length) { body.innerHTML = '<tr><td colspan="7"><div class="empty"><p>No items match your filters.</p></div></td></tr>'; return; }
+  const wrap = document.querySelector('#page-devices .table-wrap');
+
+  if (!items.length) {
+    body.innerHTML = '<tr><td colspan="7"><div class="empty"><p>No items match your filters.</p></div></td></tr>';
+    const existing = wrap.querySelector('.card-list');
+    if (existing) existing.innerHTML = '<div class="empty"><p>No items match your filters.</p></div>';
+    return;
+  }
+
   body.innerHTML = items.map(e => {
     const avail = availQty(e);
     const out = checkedOutQty(e.id);
@@ -820,6 +904,32 @@ window.renderDevices = function() {
       <td style="display:flex;gap:6px"><button class="btn btn-sm" onclick="quickCheckout('${e.id}')">Check out</button><button class="btn btn-sm btn-danger" onclick="deleteDevice('${e.id}','${e.name.replace(/'/g,"\\'")}')">Delete</button></td>
     </tr>`;
   }).join('');
+
+  // Mobile cards
+  let cardList = wrap.querySelector('.card-list');
+  if (!cardList) { cardList = document.createElement('div'); cardList.className = 'card-list'; wrap.appendChild(cardList); }
+  cardList.innerHTML = items.map(e => {
+    const avail = availQty(e);
+    const out = checkedOutQty(e.id);
+    let badge;
+    if (avail === 0) badge = '<span class="badge badge-red">All out</span>';
+    else if (out > 0) badge = `<span class="badge badge-amber">${avail}/${e.qty} avail</span>`;
+    else badge = '<span class="badge badge-green">Available</span>';
+    return `<div class="item-card">
+      <div class="item-card-row">
+        <div><div class="item-card-name">${e.name}</div><div class="item-card-sub">${e.vendor||'—'} · ${e.location||'—'}</div></div>
+        ${badge}
+      </div>
+      <div class="item-card-meta">
+        <span class="badge badge-gray">${e.category||'—'}</span>
+        <span style="font-size:12px;color:var(--text-muted)">Qty: ${e.qty} · Avail: ${avail}</span>
+      </div>
+      <div class="item-card-actions">
+        ${avail > 0 ? `<button class="btn btn-sm btn-primary" onclick="quickCheckout('${e.id}')">Check out</button>` : ''}
+        <button class="btn btn-sm btn-danger" onclick="deleteDevice('${e.id}','${e.name.replace(/'/g,"\\'")}')">Delete</button>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 // --- Render disposables ---
@@ -830,14 +940,21 @@ window.renderDisposables = function() {
   const items = window._disposables.filter(d => {
     if (q && !d.name.toLowerCase().includes(q) && !(d.vendor||'').toLowerCase().includes(q) && !(d.category||'').toLowerCase().includes(q)) return false;
     if (cat && d.category !== cat) return false;
-    const pct = (d.qty||0) / Math.max(d.lowThreshold*3, 10);
     if (sf === 'ok' && ((d.qty||0) === 0 || (d.qty||0) <= (d.lowThreshold||10))) return false;
     if (sf === 'low' && !((d.qty||0) > 0 && (d.qty||0) <= (d.lowThreshold||10))) return false;
     if (sf === 'out' && (d.qty||0) > 0) return false;
     return true;
   });
   const body = document.getElementById('disp-body');
-  if (!items.length) { body.innerHTML = '<tr><td colspan="8"><div class="empty"><p>No items match your filters.</p></div></td></tr>'; return; }
+  const wrap = document.querySelector('#page-disposables .table-wrap');
+
+  if (!items.length) {
+    body.innerHTML = '<tr><td colspan="9"><div class="empty"><p>No items match your filters.</p></div></td></tr>';
+    const existing = wrap.querySelector('.card-list');
+    if (existing) existing.innerHTML = '<div class="empty"><p>No items match your filters.</p></div>';
+    return;
+  }
+
   body.innerHTML = items.map(d => {
     const qty = d.qty||0;
     const low = d.lowThreshold||10;
@@ -859,6 +976,37 @@ window.renderDisposables = function() {
       <td><button class="btn btn-sm btn-danger" onclick="deleteDisposable('${d.id}','${d.name.replace(/'/g,"\\'")}')">Delete</button></td>
     </tr>`;
   }).join('');
+
+  // Mobile cards
+  let cardList = wrap.querySelector('.card-list');
+  if (!cardList) { cardList = document.createElement('div'); cardList.className = 'card-list'; wrap.appendChild(cardList); }
+  cardList.innerHTML = items.map(d => {
+    const qty = d.qty||0;
+    const low = d.lowThreshold||10;
+    const max = Math.max(low*3, qty, 10);
+    const pct = Math.min(100, Math.round(qty/max*100));
+    let badge, fillColor;
+    if (qty === 0) { badge='<span class="badge badge-red">Out of stock</span>'; fillColor='var(--red)'; }
+    else if (qty <= low) { badge='<span class="badge badge-amber">Running low</span>'; fillColor='var(--amber)'; }
+    else { badge='<span class="badge badge-green">In stock</span>'; fillColor='var(--green)'; }
+    return `<div class="item-card">
+      <div class="item-card-row">
+        <div><div class="item-card-name">${d.name}</div><div class="item-card-sub">${d.vendor||'—'} · ${d.unit||'units'}${d.shopuw==='yes?' ? ' · ShopUW ✓':''}</div></div>
+        ${badge}
+      </div>
+      <div class="item-card-meta">
+        <span class="badge badge-gray">${d.category||'—'}</span>
+        <span style="font-size:12px;color:var(--text-muted)">Stock: ${qty} · ${d.location||'—'}</span>
+      </div>
+      <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">
+        <div class="stock-bar" style="width:100%;margin-bottom:8px"><div class="stock-fill" style="width:${pct}%;background:${fillColor}"></div></div>
+      </div>
+      <div class="item-card-actions">
+        <button class="btn btn-sm" onclick="openStockModal('${d.id}')">Adjust stock</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteDisposable('${d.id}','${d.name.replace(/'/g,"\\'")}')">Delete</button>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 // --- Render log ---
@@ -872,7 +1020,15 @@ window.renderLog = function() {
   if (sf === 'returned') items = items.filter(l => l.returnedAt);
   if (sf === 'overdue') items = items.filter(l => !l.returnedAt && l.returnDate && new Date(l.returnDate) < now);
   const body = document.getElementById('log-body');
-  if (!items.length) { body.innerHTML = '<tr><td colspan="9"><div class="empty"><p>No records found.</p></div></td></tr>'; return; }
+  const wrap = document.querySelector('#page-log .table-wrap');
+
+  if (!items.length) {
+    body.innerHTML = '<tr><td colspan="9"><div class="empty"><p>No records found.</p></div></td></tr>';
+    const existing = wrap.querySelector('.card-list');
+    if (existing) existing.innerHTML = '<div class="empty"><p>No records found.</p></div>';
+    return;
+  }
+
   body.innerHTML = items.map(l => {
     const outDate = l.checkedOutAt?.toDate ? l.checkedOutAt.toDate() : new Date(l.checkedOutAt||Date.now());
     const overdue = !l.returnedAt && l.returnDate && new Date(l.returnDate) < now;
@@ -893,6 +1049,31 @@ window.renderLog = function() {
       <td>${badge}</td>
       <td>${retBtn}</td>
     </tr>`;
+  }).join('');
+
+  // Mobile cards
+  let cardList = wrap.querySelector('.card-list');
+  if (!cardList) { cardList = document.createElement('div'); cardList.className = 'card-list'; wrap.appendChild(cardList); }
+  cardList.innerHTML = items.map(l => {
+    const outDate = l.checkedOutAt?.toDate ? l.checkedOutAt.toDate() : new Date(l.checkedOutAt||Date.now());
+    const overdue = !l.returnedAt && l.returnDate && new Date(l.returnDate) < now;
+    let badge;
+    if (l.returnedAt) badge = '<span class="badge badge-green">Returned</span>';
+    else if (overdue) badge = '<span class="badge badge-red">Overdue</span>';
+    else badge = '<span class="badge badge-amber">Out</span>';
+    const ds = outDate.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    return `<div class="item-card" style="${l.returnedAt?'opacity:0.6':''}${overdue?';background:#fff8f8':''}">
+      <div class="item-card-row">
+        <div><div class="item-card-name">${l.itemName}</div><div class="item-card-sub">${l.borrower}${l.role?' · '+l.role:''}</div></div>
+        ${badge}
+      </div>
+      <div class="item-card-meta">
+        <span style="font-size:12px;color:var(--text-muted)">Project: ${l.project||'—'}</span>
+        <span style="font-size:12px;color:var(--text-muted)">Qty: ${l.qty}</span>
+        <span style="font-size:12px;color:${overdue?'var(--red)':'var(--text-muted)'}">Out: ${ds}${l.returnDate?' · Due: '+l.returnDate:''}</span>
+      </div>
+      ${!l.returnedAt ? `<div class="item-card-actions"><button class="btn btn-sm btn-primary" onclick="openReturnModal('${l.id}')">Mark returned</button></div>` : ''}
+    </div>`;
   }).join('');
 }
 
@@ -1107,8 +1288,13 @@ window.exportCSV = function() {
 window.showPage = function(page) {
   ['devices','disposables','log'].forEach(p => {
     document.getElementById('page-'+p).style.display = p===page?'block':'none';
-    document.getElementById('nav-'+p).classList.toggle('active', p===page);
+    const sideNav = document.getElementById('nav-'+p);
+    if (sideNav) sideNav.classList.toggle('active', p===page);
+    const mNav = document.getElementById('mnav-'+p);
+    if (mNav) mNav.classList.toggle('active', p===page);
   });
+  const mcheckout = document.getElementById('mnav-checkout');
+  if (mcheckout) mcheckout.classList.remove('active');
   if (page==='log') renderLog();
 }
 window.openModal = function(id) { document.getElementById(id).classList.add('open'); }

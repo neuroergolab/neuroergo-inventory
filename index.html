@@ -236,14 +236,17 @@
     .main { margin-left: 0; padding: 14px 10px 80px; width: 100%; min-width: 0; }
 
     .form-grid { grid-template-columns: 1fr; }
-    .page-title { font-size: 16px; }
-    .topbar { margin-bottom: 12px; gap: 8px; }
-    .topbar-actions { flex-shrink: 0; }
 
-    /* Stack toolbar vertically */
-    .toolbar { gap: 6px; }
+    /* Topbar stacks vertically */
+    .topbar { flex-direction: column; align-items: flex-start; margin-bottom: 12px; gap: 8px; }
+    .page-title { font-size: 16px; }
+    .topbar-actions { width: 100%; display: flex; gap: 8px; }
+    .topbar-actions .btn { flex: 1; justify-content: center; font-size: 13px; }
+
+    /* Toolbar stacks vertically */
+    .toolbar { flex-direction: column; gap: 6px; }
     .search-wrap { min-width: 0; width: 100%; }
-    .toolbar select { font-size: 12px; padding: 6px 8px; }
+    .toolbar select { width: 100%; font-size: 13px; padding: 8px 10px; }
 
     /* Hide table, show cards instead */
     .table-wrap table { display: none; }
